@@ -2,7 +2,7 @@
 #      Copyright © 2021. All rights are reserved by Birnadin Erick.
 #      This script can be used without any written acknowledgement from author for personal or commercial purpose.
 #
-from datetime import datetime
+from datetime import datetime as dt
 
 from flask import abort
 from flask_restful import Resource
@@ -51,7 +51,7 @@ class ResourceHunter(Resource):
             'hname': args["hname"],
             'fname': args["fname"],
             'phash': hash_passwd(args["ptxt"]),
-            'ctime': datetime.now().ctime(),
+            'cstamp': dt.now().timestamp(),
             'c_ids': [],
             'bo_ids': []
         }

@@ -2,7 +2,7 @@
 #      Copyright © 2021. All rights are reserved by Birnadin Erick.
 #      This script can be used without any written acknowledgement from author for personal or commercial purpose.
 
-from datetime import datetime
+from datetime import datetime as dt
 
 from flask import abort
 from flask_restful import Resource
@@ -21,6 +21,7 @@ clan_del_args = RequestParser()
 clan_post_args.add_argument("cname", type=str, help="C_404_cn", required=True)
 clan_post_args.add_argument("ls", type=str, help="C_404_l")
 clan_post_args.add_argument("hs", type=str, help="C_404_h")
+clan_post_args.add_argument("bos", type=str, help="C_404_bo")
 
 clan_get_args.add_argument("c_id", type=int, help="C_404_cid", required=True)
 
@@ -34,27 +35,32 @@ clan_del_args.add_argument("c_id", type=int, help="C_404_cid", required=True)
 
 class ResourceClan(Resource):
     # noinspection PyUnusedLocal
+    # TODO: verify ls, hs and bos-ids b4 processing
     @staticmethod
     def post():
         # TODO: add privileges to different leaders(ls) using OOP
         args = clan_post_args.parse_args()
         ls = list()
         hs = list()
+        bos = list()
         if args["ls"]:
             ls = [int(l) for l in args["ls"].split(",")]
         if args["hs"]:
             hs = [int(h) for h in args["hs"].split(",")]
-
+        if args["bos"]:
+            bos = [int(bo) for bo in args["bos"].split(",")]
         clan = {
             '_id': create_id(args["cname"]),
             'cname': args["cname"],
-            'ctime': datetime.now().ctime(),
+            'cstamp': dt.now().timestamp(),
             'bs': []
         }
         if len(ls):
             clan['ls'] = ls
         if len(hs):
             clan['hs'] = hs
+        if len(bos):
+            clan['bos'] = bos
 
         try:
             clans.insert_one(clan)
@@ -80,11 +86,12 @@ class ResourceClan(Resource):
 
     def patch(self):
         """
+        TODO: verify ls, hs and bos-ids b4 processing
         pathcable attr.s:
             ~ cname --> 0
             ~ ls    --> 1
             ~ hs    --> 2
-            ~ bs    --> 3
+            ~ bos    --> 3
         """
         args = clan_patch_args.parse_args()
         if args["poly"]:
@@ -158,11 +165,11 @@ class ResourceClan(Resource):
                 del opt, arg, c_id
 
         elif opt == 3:
-            bs = [int(b) for b in arg.split(",")]
+            bos = [int(b) for b in arg.split(",")]
             try:
                 clans.update_one(
                     {'_id': {'$eq': c_id}},
-                    {'$set': {'bs': bs}}
+                    {'$set': {'bos': bos}}
                 )
             except Exception as e:
                 abort(500, e.__str__())

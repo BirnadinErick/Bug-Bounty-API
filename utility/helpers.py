@@ -1,7 +1,9 @@
 #      Author: Birnadin Erick
 #      Copyright © 2021. All rights are reserved by Birnadin Erick.
 #      This script can be used without any written acknowledgement from author for personal or commercial purpose.
-#
+#      TODO: optimize the script, collect garbage var.s ath the end b4 returning
+
+
 def create_id(name):
     import datetime
     from math import ceil, floor
@@ -66,35 +68,3 @@ def change_passwd(old_pwd, new_pwd, old_pwd_in, user_obj):
         return 1, user_obj
     else:
         return 0, "The old password is incorrect"
-
-
-def subscribe_group(user, group_obj):
-    """
-    utility func to subscribe a user(s) to a group
-    :param user: int
-    :param group_obj: group obj for subscription
-    :return: tuple
-    """
-    try:
-        # from mongo.collection_group_user.CREATE import create TODO: check this
-        pass
-    except Exception as e:
-        return 0, e.__str__()
-    else:
-        return 1, group_obj
-
-
-def unsubscribe_group(user, group_obj):
-    """
-    utility func to unsubcribe a user from a group
-    :param user: int
-    :param group_obj: group obj for unsubscription
-    :return: tuple
-    """
-    try:
-        index = group_obj.members.indexof(user)
-        group_obj.members.pop(index)
-    except Exception as e:
-        return 0, e.__str__()
-    else:
-        return 1, group_obj

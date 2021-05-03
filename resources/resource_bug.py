@@ -49,14 +49,14 @@ class ResourceBug(Resource):
         args = bug_post_args.parse_args()
         times = 0
         bug = {
-            "_id": create_id(args["name"]),
-            "name": args["name"],
-            "status": 1,
-            "author": args["author"],
-            "ctime": dt.now().ctime(),
-            "bo_id": args["bounty_id"],
-            "desc": args["desc"],
-            "assignees": []
+            '_id': create_id(args["name"]),
+            'name': args["name"],
+            'status': 1,
+            'author': args["author"],
+            'cstamp': dt.now().timestamp(),
+            'bo_id': args["bounty_id"],
+            'desc': args["desc"],
+            'assignees': []
         }
 
         while True:
@@ -66,11 +66,11 @@ class ResourceBug(Resource):
                 if times:
                     abort(413, "Sorry, document too larg to produce")
                 else:
-                    del (bug["desc"])
+                    del (bug['desc'])
                     times += 1
                     continue
             except DuplicateKeyError:
-                bug["_id"] = create_id(args["name"])
+                bug['_id'] = create_id(args["name"])
                 continue
             except NetworkTimeout:
                 if times:
