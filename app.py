@@ -5,6 +5,7 @@
 from flask import Flask
 from flask_restful import Api
 
+from resource_clan import ResourceClan
 from resources.resource_bug import ResourceBug
 from resources.resource_hunter import ResourceHunter
 
@@ -14,6 +15,7 @@ api = Api(app)  # api init
 
 api.add_resource(ResourceBug, '/bug')
 api.add_resource(ResourceHunter, '/hunter')
+api.add_resource(ResourceClan, '/clan')
 
 if __name__ == '__main__':
     app.run()
