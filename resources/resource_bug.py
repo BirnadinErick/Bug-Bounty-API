@@ -1,3 +1,8 @@
+#      Author: Birnadin Erick
+#      Copyright © 2021. All rights are reserved by Birnadin Erick.
+#      This script can be used without any written acknowledgement from author for personal or commercial purpose.
+#
+
 from datetime import datetime as dt
 from time import sleep
 
@@ -48,8 +53,8 @@ class ResourceBug(Resource):
             "name": args["name"],
             "status": 1,
             "author": args["author"],
-            "c_date": dt.now().ctime(),
-            "b_id": args["bounty_id"],
+            "ctime": dt.now().ctime(),
+            "bo_id": args["bounty_id"],
             "desc": args["desc"],
             "assignees": []
         }

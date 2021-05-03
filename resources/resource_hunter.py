@@ -1,3 +1,7 @@
+#      Author: Birnadin Erick
+#      Copyright © 2021. All rights are reserved by Birnadin Erick.
+#      This script can be used without any written acknowledgement from author for personal or commercial purpose.
+#
 from datetime import datetime
 
 from flask import abort
@@ -47,9 +51,9 @@ class ResourceHunter(Resource):
             'hname': args["hname"],
             'fname': args["fname"],
             'phash': hash_passwd(args["ptxt"]),
-            'c_date': datetime.now().ctime(),
+            'ctime': datetime.now().ctime(),
             'c_ids': [],
-            'b_ids': []
+            'bo_ids': []
         }
 
         if args["lname"]:
