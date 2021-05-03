@@ -124,8 +124,7 @@ class ResourceBug(Resource):
             finally:
                 del bug
 
-    @staticmethod
-    def patch():
+    def patch(self):
         """
         patchable attr.s:
             ~ stat       --> 0
@@ -136,13 +135,13 @@ class ResourceBug(Resource):
         args = bug_patch_args.parse_args()
 
         if not args["poly"]:
-            update_per_opt(opt=args["opt"], param=args["param"], bug_id=args["bug_id"])
+            self.update_per_opt(opt=args["opt"], param=args["param"], bug_id=args["bug_id"])
         else:
             if args["opts"]:
                 opts = [int(o) for o in args["opts"].split("|")]
                 params = args["param"].split("|")
                 for opt in opts:
-                    update_per_opt(opt=opt, param=params[opts.index(opt)], bug_id=args["bug_id"])
+                    self.update_per_opt(opt=opt, param=params[opts.index(opt)], bug_id=args["bug_id"])
             else:
                 abort(403, "Opts param should be specified if Poly is true")
 
@@ -180,67 +179,66 @@ class ResourceBug(Resource):
 
         del args
 
+    @staticmethod
+    def update_per_opt(opt, param, bug_id):
+        if opt == 0:
+            stat = int(param)
+            if (stat < 0) or (stat > 1):
+                abort(403, "Please make sure the status value pointing is correct!")
+            else:
+                try:
+                    bugs.update_one(
+                        {'_id': {'$eq': bug_id}},
+                        {'$set': {'status': stat}}
+                    )
+                except Exception as e:
+                    abort(500, e.__str__())
+                else:
+                    del stat
 
-# noinspection PyUnboundLocalVariable,PyUnusedLocal
-def update_per_opt(opt, param, bug_id):
-    if opt == 0:
-        stat = int(param)
-        if (stat < 0) or (stat > 1):
-            abort(403, "Please make sure the status value pointing is correct!")
-        else:
+        elif opt == 1:
+            a_list = list()
+            if "," in param:
+                a_list = [int(a) for a in param.split(",")]
+            else:
+                if len(param) > 1:
+                    a_list.append(int(param))
+                else:
+                    a_list = []
+            # noinspection PyUnboundLocalVariable
+            if len(a_list):
+                try:
+                    bugs.update_one(
+                        {'_id': {'$eq': bug_id}},
+                        {'$set': {'assignees': a_list}}
+                    )
+                except Exception as e:
+                    abort(500, e.__str__())
+                else:
+                    del a_list
+
+        elif opt == 2:
             try:
                 bugs.update_one(
                     {'_id': {'$eq': bug_id}},
-                    {'$set': {'status': stat}}
+                    {'$set': {'desc': param}}
+                )
+            except Exception as e:
+                abort(500, e.__str__())
+
+        elif opt == 3:
+            b_id = int(param)
+            try:
+                bugs.update_one(
+                    {'_id': {'$eq': bug_id}},
+                    {'$set': {'b_id': b_id}}
                 )
             except Exception as e:
                 abort(500, e.__str__())
             else:
-                del stat
-
-    elif opt == 1:
-        a_list = list()
-        if "," in param:
-            a_list = [int(a) for a in param.split(",")]
+                del b_id
         else:
-            if len(param) > 1:
-                a_list.append(int(param))
-            else:
-                a_list = []
-        # noinspection PyUnboundLocalVariable
-        if len(a_list):
-            try:
-                bugs.update_one(
-                    {'_id': {'$eq': bug_id}},
-                    {'$set': {'assignees': a_list}}
-                )
-            except Exception as e:
-                abort(500, e.__str__())
-            else:
-                del a_list
-
-    elif opt == 2:
-        try:
-            bugs.update_one(
-                {'_id': {'$eq': bug_id}},
-                {'$set': {'desc': param}}
-            )
-        except Exception as e:
-            abort(500, e.__str__())
-
-    elif opt == 3:
-        b_id = int(param)
-        try:
-            bugs.update_one(
-                {'_id': {'$eq': bug_id}},
-                {'$set': {'b_id': b_id}}
-            )
-        except Exception as e:
-            abort(500, e.__str__())
-        else:
-            del b_id
-    else:
-        abort(403, "Please make sure the opt you opted is available")
+            abort(403, "Please make sure the opt you opted is available")
 
 
 if __name__ == '__main__':
